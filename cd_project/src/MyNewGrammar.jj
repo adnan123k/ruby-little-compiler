@@ -1,0 +1,315 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+
+options{  static = true;
+
+ }PARSER_BEGIN(test)
+ import nodes.*;
+import java.util.HashMap;
+
+public class test{
+
+   public static void main(String args []) throws ParseException  {   test parser = new test(System.in);
+   try { 
+ statmentNode t= parser.start();
+ t.execute(); }catch(Exception e)
+  {System.out.print(e); }    }}PARSER_END(test)
+  SKIP :{ "\n"| " "| "\r"| "\t"|< "//" (~["\r", "\n"])* >|
+  < "/*"(~["*"])* "*""/">}
+  TOKEN : /* OPERATORS */{  < PLUS : "+" >| < MINUS : "-" >| < MULTIPLY : "*" >| < DIVIDE : "/" >
+| < R:"%" >|<PLUSASSIGN: "+=">
+                  | <MINUSASSIGN: "-=">
+                  | <STARASSIGN: "*=">
+                  | <SLASHASSIGN: "/=">|
+                  <REMASSIGN: "%=">|<EQ: "==">
+                  | <LE: "<=">
+                  | <GE: ">=">
+                  | <NE: "!=">| <LT: "<">
+                  | <BANG: "!">|<GT: ">">|<LPAREN: "(">
+                  | <RPAREN: ")"> | <COMMA: ",">   | <DOT: ".">| <LBRACE: "{">
+                  | <RBRACE: "}">
+                  | <LBRACKET: "[">
+                  | <RBRACKET: "]">|< HASH:"#" >}TOKEN :{< DO: "do">|< BREAK:"break" >|< LOOP:"loop" >|<INPUT:"gets" >|< TRUE:"true" >|< FALSE:"false" >|
+  < CASE:"case" >|
+< END:"end" >|
+< ELSE:"else" >|<WHEN:"when" >|< IN :"in">|
+< LEN:"length" >|
+< DEF:"def" >|
+< RETURN:"return" >|
+< IF:"if">|< ELSIF:"elsif" >|<FOR:"for" >|
+< NEXT:"next" >|<WHILE:"while" > |< AND:"and" >|< OR:"or" >|
+  < PRINT:"puts" >|  <# DIGIT : [ "0"-"9" ] >|
+  < #CHAR: ["a"-"z","A"-"Z"]>|
+  < ID:("$"|"@"|["a"-"z"])(<CHAR >|< DIGIT >|"-")* >
+| < ASSIGN:"=" >|< E :"E">|
+< INT: ("0"|("+"|"-")?(["1"-"9"](< DIGIT >)*(< E >(((< PLUS >|< MINUS >)?["1"-"9"](< DIGIT >))|"0"))?))>|
+< DOUBLE :((< INT >"."<INT >) |"0.0")>|
+< STRING:"\""(~["\""])*"\"" >
+}
+statmentNode statment(): { switchNode sw=null;statmentNode st=new statmentNode();idNode ind=null;fornode fn=null;dowhilenode dw=null;whilenode w=null;printNode f1;generalif f;} {
+( sw=switch_statment() {st.add(sw);st.addtype("switch"); }|ind=identify() {try {st.add(ind); st.addtype("id");}catch(Exception e) { } }
+|fn=for_statment() {try {st.add(fn);st.addtype("for"); }catch(Exception e) { } }
+|dw=do_while() {try {st.add(dw);st.addtype("dowhile"); }catch(Exception e) { } }
+|f1=print_statment() {try {  st.add(f1);st.addtype("print"); }catch(Exception e) { } }
+|w=while_statment() {try { st.add(w);st.addtype("while"); }catch(Exception e) { System.out.print(e.toString());} }
+|f=if_statment() {try {  st.add(f);st.addtype("if"); }catch(Exception e) { }})+ < END >{ return st;}|ex()
+  }
+statmentNode statement(): {  switchNode sw=null;statmentNode st=new statmentNode();idNode ind=null;fornode fn=null;dowhilenode dw=null;whilenode w=null;printNode f1;generalif f;} {
+( sw=switch_statment() {st.add(sw);st.addtype("switch"); }|ind=identify() {try {st.add(ind); st.addtype("id");}catch(Exception e) { } }
+|fn=for_statment() {try {st.add(fn);st.addtype("for"); }catch(Exception e) { } }
+|dw=do_while() {try {st.add(dw);st.addtype("dowhile"); }catch(Exception e) { } }
+|f1=print_statment() {try {  st.add(f1);st.addtype("print"); }catch(Exception e) { } }
+|w=while_statment() {try { st.add(w);st.addtype("while"); }catch(Exception e) { System.out.print(e.toString());} }
+|f=if_statment() {try {  st.add(f);st.addtype("if"); }catch(Exception e) { }})+ { return st;} 
+  }
+ printNode print_statment(): {
+
+   Token value=null; calNode r=null;} {
+   
+< PRINT >(r=arthmitac()|value=< TRUE >|value=< FALSE >) {
+
+if(value!=null) {
+r=new calNode();
+doublenode temp=new doublenode(value.image,value.kind);
+r.add(temp);
+printNode temp1=new printNode();
+temp1.add(r);
+try { 
+return temp1; }
+catch(Exception e) { }
+  }
+  else {
+    printNode temp1=new printNode();
+temp1.add(r);
+    try {
+return temp1;}
+catch(Exception e) { }
+    }
+
+  
+}
+   }
+dowhilenode do_while(): { dowhilenode dw=new dowhilenode();statmentNode p=new statmentNode();condtio c=new condtio();} {
+  < LOOP ><DO >(p=statement() { dw.add(p);})< IF >c=condtio() {dw.add(c); }<BREAK >< END > { return dw;} }
+   
+condtio condtio(): {condtio c1=null,temp3=new condtio();Token t1=null,t2=null,t3=null;calNode r=null,r2=null;}{(
+ t1= < FALSE >|t1=< TRUE >
+  |
+  (
+   r= arthmitac()(
+      t2=<EQ>
+                  | t2=<LE>
+                  | t2=<GE>
+                  | t2=<NE >|t2= <LT>|t2=< GT >|ex1()
+                  )
+                r2= arthmitac()
+                  )
+                  ) {
+                    if(t1!=null) { 
+doublenode temp=new doublenode(t1.image,t1.kind);
+calNode temp2=new calNode();
+temp2.add(temp);
+
+temp3.add(temp2);
+
+}
+else { 
+temp3.add(r);
+doublenode temp=new doublenode(t2.image,t2.kind);
+temp3.add(temp);
+temp3.add(r2);
+
+ } }
+                  ((t3=< AND >|t3=< OR >) c1=condtio())? {
+                    if(t3!=null) {
+                 
+temp3.set(t3.image);
+temp3.add(c1); }
+                     return temp3;}
+
+
+                     
+ }
+ calNode arthmitac(): {calNode print=new calNode();doublenode t1,t2,t3; Token first,second=null,third=null;boolean firsttime=false; } {
+  
+ (
+   (    first=<INPUT > | first=< ID >|first=< INT >|first=< DOUBLE >|first=< STRING >
+    )(
+      (second=< PLUS  >
+| second=< MINUS  >
+| second=< MULTIPLY  >
+| second=< DIVIDE >
+| second=< R>)
+( third=<INPUT >|third=< ID >|third=< INT >|third=< DOUBLE >|third=< STRING >) {
+
+  if(!firsttime) {
+    t1=new doublenode(first.image,first.kind);
+
+    print.add(t1);
+firsttime=true;
+    }
+    t2=new doublenode(second.image,second.kind);
+        t3=new doublenode(third.image,third.kind);
+            print.add(t2);
+                        print.add(t3);
+        
+ }
+)*
+)
+{
+
+  if(!firsttime) {
+    t1=new doublenode(first.image,first.kind);
+
+    print.add(t1);
+firsttime=true;
+    }
+return print;
+}
+
+
+   }
+ generalif if_statment(): {Token t11,t12=null,t13=null;generalif h=new generalif();condtio t1,t2=null;
+ statmentNode p1,p2=null,p3=null;boolean firsttime=false; } {
+t11=< IF >
+t1=condtio()
+(p1=statement()) 
+(t12=< ELSIF >t2=condtio()(p2=statement()) { if(!firsttime) {
+  ifNode l=new ifNode(t11.image);
+ l.add(t1);
+ l.add(p1);
+ h.add(l);
+firsttime=true;
+  }
+  if(t12!=null) { 
+  ifNode l=new ifNode(t12.image);
+ l.add(t2);
+ l.add(p2); h.add(l); }}) 
+*(t13=< ELSE >(p3=statement()) )?{if(!firsttime) {
+  ifNode l=new ifNode(t11.image);
+ l.add(t1);
+ l.add(p1);
+ h.add(l);
+firsttime=true;
+  }
+
+  if(t13!=null) { 
+  ifNode l=new ifNode(t13.image);
+
+ l.add(p3); h.add(l); }
+   }
+
+< END >  { return h;}
+  }
+
+    whilenode while_statment(): {Boolean first=false;
+    whilenode w=new whilenode();
+    condtio c=new condtio();
+    statmentNode p=new statmentNode(); }
+{
+ < WHILE >c=condtio( )
+ (p=statement() {if(!first) {
+w.add(c);
+first=true;
+   }
+   w.add(p); })+
+ <END > { return w;}
+ }
+  fornode for_statment(): {Boolean first=false;fornode n=null;statmentNode r=new statmentNode();Token t1,t2,t3; }
+{
+< FOR >t1=<ID > <IN >(t2=< ID >|t2=< INT >)< DOT><DOT >< DOT>(t3=< ID >|t3=< INT >)
+(r=statement() {
+if(!first) {
+n=new fornode(t2.image,t3.image,t2.kind,t3.kind,t1.image);
+  first=true;}
+  n.add(r);
+  })
+
+< END > { return n;} 
+  }
+idNode identify(): {idNode r=null;Token t1=null,t2=null,t3=null;calNode c; }
+{
+
+  
+LOOKAHEAD(3) t1=< ID >
+  (t2=< ASSIGN >(t3=< TRUE >|t3=< FALSE >)) {// bool 34 | 35
+              
+                 if(t3!=null) {  r=new idNode(t1.image,t2.image,t3.kind);
+                 return r;}
+                    }| t1=< ID >
+  ((t2=< ASSIGN >|t2=<PLUSASSIGN>
+                  | t2=<MINUSASSIGN>
+                  | t2=<STARASSIGN>
+                  | t2=<SLASHASSIGN>|
+               t2= <REMASSIGN>) c=arthmitac())
+
+                
+                 {// bool 34 | 35
+              
+                 if(t3!=null) {  r=new idNode(t1.image,t2.image,t3.kind);
+                 return r;}else { r=new idNode(t1.image,t2.image,80);
+                 r.add(c);
+                 return r; }
+               return r;
+                    }
+  }
+ 
+caseNode cases(): {caseNode c=new caseNode();Token t1=null,t2=null;statmentNode n=null; } {
+         < WHEN >(t1=< ID >|t1=< INT >|t1=< DOUBLE >)(< DOT><DOT >(t2=< ID >|t2=< INT >|t2=< DOUBLE >))?(n=statement()) {
+doublenode temp=new doublenode(t1.image,t1.kind);
+calNode temp2=new calNode();
+temp2.add(temp);
+c.add(temp2);
+if(t2!=null) {  temp=new doublenode(t2.image,t2.kind);
+ temp2=new calNode();
+temp2.add(temp);
+c.add(temp2);}
+    c.add(n);
+return c;
+    }
+  }
+
+
+    switchNode switch_statment(): {caseNode c=null;switchNode s=null;Token t1,t2=null; statmentNode n=null;}
+{
+       < CASE >t1=<ID > {s=new switchNode(t1.image);
+doublenode temp=new doublenode(t1.image,t1.kind);
+calNode temp2=new calNode();
+temp2.add(temp);
+s.add(temp2);
+  }(c=cases() { if(c!=null)s.add(c); })+
+ (  t2= < ELSE >(n=statement()))?
+ <END > {
+if(t2!=null) {
+  s.set("else");
+s.add(n);
+  }
+   return s; }
+   }
+statmentNode start():{statmentNode f=new statmentNode(); }
+{
+ (f= statment()) {
+
+   return f;}
+  }
+
+JAVACODE
+void ex() {
+ParseException e=generateParseException();
+System.out.println("statement is ignored");
+Token t;
+do {
+t=getNextToken();
+   }while(t.kind!=END);
+  }
+
+  JAVACODE
+void ex1() {
+ParseException e=generateParseException();
+System.out.println("statement is ignored");
+Token t;
+do {
+t=getNextToken();
+   }while(t.kind!=LE && t.kind!=GE && t.kind!=LT && t.kind!=NE && t.kind!=GT && t.kind!=EQ);
+  }  
