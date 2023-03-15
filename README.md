@@ -18,8 +18,8 @@ it's a little compiler for ruby programming language made using javacc for educa
 
 ## example of usage:
 <p align="center">
-<img width="804" alt="Screenshot 2023-03-15 at 1 37 00 PM" src="./Screenshot 2023-03-15 at 1.45.31 PM.png">
-<img width="234" alt="Screenshot 2023-03-15 at 1 39 47 PM" src="./Screenshot 2023-03-15 at 1.45.31 PM.png">
+<img width="804" alt="print statement" src="./print_statement">
+<img width="234" alt="for statement" src="./for_statement.png">
 </p>
 
 note: you should put end at last to run the file so the compiler know you're finished
